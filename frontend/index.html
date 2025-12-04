@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/frontend/public/images/logo/richpro-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RichPro+ gift card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 在页面加载前应用深色模式，避免闪烁 -->
+    <script>
+      (function() {
+        // 检查 localStorage 中是否有保存的主题设置
+        const saved = localStorage.getItem('darkMode');
+        // 如果没有保存，默认使用深色模式（true）
+        const isDarkMode = saved === null ? true : saved === 'true';
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark-mode');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
