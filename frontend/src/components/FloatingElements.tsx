@@ -13,7 +13,7 @@ export default function FloatingElements() {
 
     const elements = containerRef.current.querySelectorAll('.float-element')
     
-    elements.forEach((element, index) => {
+    elements.forEach((element) => {
       // 随机初始位置
       const startX = Math.random() * 100
       const startY = Math.random() * 100

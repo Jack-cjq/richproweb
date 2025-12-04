@@ -116,7 +116,14 @@ export class ContentController {
       let content = await repository.findOne({ where: { id: 1 } })
 
       if (!content) {
-        content = repository.create({ id: 1, ...req.body })
+        content = repository.create({
+          id: 1,
+          heroTitle: req.body.heroTitle || '',
+          heroSubtitle: req.body.heroSubtitle || '',
+          processSteps: req.body.processSteps || [],
+          securityFeatures: req.body.securityFeatures || [],
+          faqs: req.body.faqs || [],
+        })
       } else {
         Object.assign(content, req.body)
       }
