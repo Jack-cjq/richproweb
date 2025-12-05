@@ -1,9 +1,11 @@
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
+import { useState, useEffect } from 'react'
 import zhCN from 'date-fns/locale/zh-CN'
 import enUS from 'date-fns/locale/en-US'
 import es from 'date-fns/locale/es'
 import fr from 'date-fns/locale/fr'
+import { publicApi } from '../api/services'
 
 interface Trade {
   id: number
@@ -23,6 +25,8 @@ interface Props {
 
 export default function RecentTrades({ trades, loading }: Props) {
   const { t, i18n } = useTranslation()
+  const [selectedCurrency, setSelectedCurrency] = useState<'NGN' | 'GHC'>('NGN')
+  const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
   
   const getLocale = () => {
     switch (i18n.language) {
@@ -31,6 +35,39 @@ export default function RecentTrades({ trades, loading }: Props) {
       case 'fr': return fr
       default: return enUS
     }
+  }
+
+  // 加载汇率配置
+  useEffect(() => {
+    const loadConversionConfig = async () => {
+      try {
+        const res = await publicApi.getConversionConfig()
+        setConversionConfig({
+          ngnRate: res.data.ngnRate || 200,
+          ghcRate: res.data.ghcRate || 1.0,
+        })
+      } catch (error) {
+        console.error('加载汇率配置失败:', error)
+        setConversionConfig({
+          ngnRate: 200,
+          ghcRate: 1.0,
+        })
+      }
+    }
+    loadConversionConfig()
+  }, [])
+
+  const getConvertedAmount = (totalAmount: number): number => {
+    if (!conversionConfig) return totalAmount
+    if (selectedCurrency === 'NGN') {
+      return Math.floor(totalAmount * conversionConfig.ngnRate)
+    } else {
+      return Math.floor(totalAmount * conversionConfig.ghcRate)
+    }
+  }
+
+  const getCurrencySymbol = (): string => {
+    return selectedCurrency === 'NGN' ? '₦' : 'GH₵'
   }
 
   if (loading) {
@@ -119,7 +156,7 @@ export default function RecentTrades({ trades, loading }: Props) {
         </div>
         <div className="text-right min-w-[100px] md:min-w-[120px]">
           <div className="text-base md:text-xl font-bold text-green-600 dark-mode:text-green-400 mb-0.5 md:mb-1">
-            ¥{Number(trade.totalAmount).toLocaleString()}
+            {getCurrencySymbol()}{getConvertedAmount(Number(trade.totalAmount)).toLocaleString()}
           </div>
           <div
             className={`text-[10px] md:text-xs font-semibold px-1.5 md:px-2 py-0.5 md:py-1 rounded-md inline-block ${
@@ -137,6 +174,31 @@ export default function RecentTrades({ trades, loading }: Props) {
 
   return (
     <div className="bg-surface dark-mode:bg-black rounded-md p-8 shadow-card border border-silver-200 dark-mode:border-gold-500/30">
+      {/* 货币切换 */}
+      <div className="flex justify-center mb-4 md:mb-6">
+        <div className="flex items-center gap-2 bg-white dark-mode:bg-black border border-silver-200 dark-mode:border-gold-500/30 rounded-md p-1">
+          <button
+            onClick={() => setSelectedCurrency('NGN')}
+            className={`px-3 md:px-4 py-1.5 md:py-2 rounded text-sm md:text-base font-semibold transition-colors ${
+              selectedCurrency === 'NGN'
+                ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+            }`}
+          >
+            ₦ NGN
+          </button>
+          <button
+            onClick={() => setSelectedCurrency('GHC')}
+            className={`px-3 md:px-4 py-1.5 md:py-2 rounded text-sm md:text-base font-semibold transition-colors ${
+              selectedCurrency === 'GHC'
+                ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+            }`}
+          >
+            GH₵ GHC
+          </button>
+        </div>
+      </div>
       <div className="space-y-3">
         {displayedTrades.map((trade, index) => renderTradeCard(trade, index))}
       </div>

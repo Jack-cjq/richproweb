@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { gsap } from 'gsap'
+import { useTranslation } from 'react-i18next'
 
 interface Carousel {
   id: number
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function Carousel({ carousels, loading }: Props) {
+  const { t } = useTranslation()
   const [currentIndex, setCurrentIndex] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -64,7 +66,7 @@ export default function Carousel({ carousels, loading }: Props) {
     return (
       <div className="relative w-full carousel-container carousel-aspect-ratio bg-silver-200 animate-pulse">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-neutral-500">加载中...</div>
+          <div className="text-neutral-500">{t('common.loading')}</div>
         </div>
       </div>
     )
