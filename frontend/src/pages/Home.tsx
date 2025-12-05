@@ -210,7 +210,7 @@ export default function Home() {
                   <div className="relative overflow-hidden">
                     <img
                       src={
-                        image.imageUrl.startsWith('http')
+                        image.imageUrl.startsWith('http') || image.imageUrl.startsWith('data:image/')
                           ? image.imageUrl
                           : image.imageUrl.startsWith('/')
                           ? image.imageUrl

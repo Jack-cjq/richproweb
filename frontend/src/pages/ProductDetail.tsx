@@ -53,11 +53,13 @@ export default function ProductDetail() {
   }
 
   const getImageUrl = (imagePath: string) => {
-    return imagePath.startsWith('http')
-      ? imagePath
-      : imagePath.startsWith('/')
-      ? imagePath
-      : `/images/products/${imagePath.split('/').pop()}`
+    if (imagePath.startsWith('http') || imagePath.startsWith('data:image/')) {
+      return imagePath
+    }
+    if (imagePath.startsWith('/')) {
+      return imagePath
+    }
+    return `/images/products/${imagePath.split('/').pop()}`
   }
 
   if (loading) {

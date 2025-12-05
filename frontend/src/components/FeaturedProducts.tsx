@@ -87,11 +87,13 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
       return '/images/placeholder-product.png' // 占位图
     }
     const firstImage = images[0]
-    return firstImage.startsWith('http')
-      ? firstImage
-      : firstImage.startsWith('/')
-      ? firstImage
-      : `/images/products/${firstImage.split('/').pop()}`
+    if (firstImage.startsWith('http') || firstImage.startsWith('data:image/')) {
+      return firstImage
+    }
+    if (firstImage.startsWith('/')) {
+      return firstImage
+    }
+    return `/images/products/${firstImage.split('/').pop()}`
   }
 
   return (

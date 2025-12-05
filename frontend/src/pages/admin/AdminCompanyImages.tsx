@@ -105,7 +105,10 @@ export default function AdminCompanyImages() {
 
       if (imageFile) {
         data.image = imageFile
-      } else if (formData.imageUrl) {
+        // 有文件时，不发送 imageUrl（避免发送 base64 预览数据）
+        delete data.imageUrl
+      } else if (formData.imageUrl && !formData.imageUrl.startsWith('data:image/')) {
+        // 只有当 imageUrl 不是 base64 时才发送（用于编辑时保留已有图片）
         data.imageUrl = formData.imageUrl
       }
 
@@ -235,7 +238,7 @@ export default function AdminCompanyImages() {
                     <div className="flex items-center gap-3">
                       <img
                         src={
-                          formData.imageUrl.startsWith('http')
+                          formData.imageUrl.startsWith('http') || formData.imageUrl.startsWith('data:image/')
                             ? formData.imageUrl
                             : formData.imageUrl.startsWith('/')
                             ? formData.imageUrl
@@ -333,7 +336,7 @@ export default function AdminCompanyImages() {
                         <td className="py-4 px-4">
                           <img
                             src={
-                              image.imageUrl.startsWith('http')
+                              image.imageUrl.startsWith('http') || image.imageUrl.startsWith('data:image/')
                                 ? image.imageUrl
                                 : image.imageUrl.startsWith('/')
                                 ? image.imageUrl

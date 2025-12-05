@@ -88,7 +88,10 @@ export default function AdminCarousels() {
 
       if (imageFile) {
         data.image = imageFile
-      } else if (formData.imageUrl) {
+        // 有文件时，不发送 imageUrl（避免发送 base64 预览数据）
+        delete data.imageUrl
+      } else if (formData.imageUrl && !formData.imageUrl.startsWith('data:image/')) {
+        // 只有当 imageUrl 不是 base64 时才发送（用于编辑时保留已有图片）
         data.imageUrl = formData.imageUrl
       }
 
@@ -99,6 +102,8 @@ export default function AdminCarousels() {
         await adminApi.createCarousel(data)
         toast.success('创建成功')
       }
+      // 清除预览数据，确保重新加载时使用服务器返回的正确路径
+      setImageFile(null)
       handleCancel()
       loadCarousels()
     } catch (error: any) {
@@ -209,7 +214,7 @@ export default function AdminCarousels() {
                     <div className="flex items-center gap-3">
                       <img
                         src={
-                          formData.imageUrl.startsWith('http')
+                          formData.imageUrl.startsWith('http') || formData.imageUrl.startsWith('data:image/')
                             ? formData.imageUrl
                             : formData.imageUrl.startsWith('/')
                             ? formData.imageUrl
@@ -319,7 +324,7 @@ export default function AdminCarousels() {
                         <td className="py-4 px-4">
                           <img
                             src={
-                              carousel.imageUrl.startsWith('http')
+                              carousel.imageUrl.startsWith('http') || carousel.imageUrl.startsWith('data:image/')
                                 ? carousel.imageUrl
                                 : carousel.imageUrl.startsWith('/')
                                 ? carousel.imageUrl

@@ -143,11 +143,13 @@ export default function ProductHall({ products, loading, supportedCards = [], ma
       return '/images/placeholder-product.png'
     }
     const firstImage = images[0]
-    return firstImage.startsWith('http')
-      ? firstImage
-      : firstImage.startsWith('/')
-      ? firstImage
-      : `/images/products/${firstImage.split('/').pop()}`
+    if (firstImage.startsWith('http') || firstImage.startsWith('data:image/')) {
+      return firstImage
+    }
+    if (firstImage.startsWith('/')) {
+      return firstImage
+    }
+    return `/images/products/${firstImage.split('/').pop()}`
   }
 
   if (loading) {

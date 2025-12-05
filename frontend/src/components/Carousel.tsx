@@ -77,12 +77,21 @@ export default function Carousel({ carousels, loading }: Props) {
   const currentCarousel = carousels[currentIndex]
 
   const getImageUrl = () => {
-    const url = currentCarousel.imageUrl.startsWith('http')
-      ? currentCarousel.imageUrl
-      : currentCarousel.imageUrl.startsWith('/')
-      ? currentCarousel.imageUrl
-      : `/images/carousels/${currentCarousel.imageUrl.split('/').pop()}`
-    return url
+    const url = currentCarousel.imageUrl
+    // 如果是完整 URL（http/https），直接使用
+    if (url.startsWith('http')) {
+      return url
+    }
+    // 如果是 base64 数据 URL，直接使用
+    if (url.startsWith('data:image/')) {
+      return url
+    }
+    // 如果以 / 开头，直接使用（相对路径）
+    if (url.startsWith('/')) {
+      return url
+    }
+    // 否则，假设是文件名，拼接默认路径
+    return `/images/carousels/${url.split('/').pop()}`
   }
 
   return (

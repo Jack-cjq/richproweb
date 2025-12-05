@@ -142,8 +142,8 @@ export default function SupportedCards({ cards, loading }: Props) {
                 {card.logoUrl ? (
                   <img
                     src={
-                      // 如果是完整 URL（http/https），直接使用
-                      card.logoUrl.startsWith('http') 
+                      // 如果是完整 URL（http/https）或 base64，直接使用
+                      card.logoUrl.startsWith('http') || card.logoUrl.startsWith('data:image/')
                         ? card.logoUrl 
                         // 如果以 / 开头，直接使用（相对路径）
                         : card.logoUrl.startsWith('/') 

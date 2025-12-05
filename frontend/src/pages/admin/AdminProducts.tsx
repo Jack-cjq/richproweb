@@ -151,11 +151,13 @@ export default function AdminProducts() {
 
   const getImageUrl = (image: File | string) => {
     if (typeof image === 'string') {
-      return image.startsWith('http') 
-        ? image 
-        : image.startsWith('/')
-        ? image
-        : `/images/products/${image.split('/').pop()}`
+      if (image.startsWith('http') || image.startsWith('data:image/')) {
+        return image
+      }
+      if (image.startsWith('/')) {
+        return image
+      }
+      return `/images/products/${image.split('/').pop()}`
     }
     return URL.createObjectURL(image)
   }
