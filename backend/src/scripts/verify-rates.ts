@@ -1,6 +1,6 @@
 import 'reflect-metadata'
-import { AppDataSource } from '../data-source'
-import { ExchangeRate } from '../entities/ExchangeRate'
+import { AppDataSource } from '../data-source.js'
+import { ExchangeRate } from '../entities/ExchangeRate.js'
 
 /**
  * 验证数据库中的汇率数据

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { SystemConfig } from '../entities/SystemConfig'
-import { ExchangeRateService } from '../services/exchangeRateService'
+import { AppDataSource } from '../data-source.js'
+import { SystemConfig } from '../entities/SystemConfig.js'
+import { ExchangeRateService } from '../services/exchangeRateService.js'
 
 export class SystemConfigController {
   /**

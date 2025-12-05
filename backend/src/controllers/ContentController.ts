@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { Content } from '../entities/Content'
+import { AppDataSource } from '../data-source.js'
+import { Content } from '../entities/Content.js'
 
 export class ContentController {
   static async getPublic(req: Request, res: Response) {

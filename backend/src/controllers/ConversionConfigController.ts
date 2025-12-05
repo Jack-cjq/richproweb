@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { ConversionConfig } from '../entities/ConversionConfig'
+import { AppDataSource } from '../data-source.js'
+import { ConversionConfig } from '../entities/ConversionConfig.js'
 
 export class ConversionConfigController {
   /**

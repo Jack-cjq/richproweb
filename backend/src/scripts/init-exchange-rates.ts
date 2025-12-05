@@ -1,7 +1,7 @@
 import 'reflect-metadata'
-import { AppDataSource } from '../data-source'
-import { ExchangeRate } from '../entities/ExchangeRate'
-import { ExchangeRateService } from '../services/exchangeRateService'
+import { AppDataSource } from '../data-source.js'
+import { ExchangeRate } from '../entities/ExchangeRate.js'
+import { ExchangeRateService } from '../services/exchangeRateService.js'
 
 /**
  * 初始化默认货币汇率

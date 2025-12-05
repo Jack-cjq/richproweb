@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { Trade } from '../entities/Trade'
+import { AppDataSource } from '../data-source.js'
+import { Trade } from '../entities/Trade.js'
 
 export class TradeController {
   static async getPublic(req: Request, res: Response) {

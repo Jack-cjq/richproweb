@@ -1,27 +1,27 @@
 import { Router } from 'express'
-import { AdminController } from '../controllers/AdminController'
-import { ExchangeRateController } from '../controllers/ExchangeRateController'
-import { ProductController } from '../controllers/ProductController'
-import { TradeController } from '../controllers/TradeController'
-import { ContentController } from '../controllers/ContentController'
-import { StatsController } from '../controllers/StatsController'
-import { SupportedCardController } from '../controllers/SupportedCardController'
-import { CarouselController } from '../controllers/CarouselController'
-import { SystemConfigController } from '../controllers/SystemConfigController'
-import { ConversionConfigController } from '../controllers/ConversionConfigController'
-import { CompanyImageController } from '../controllers/CompanyImageController'
-import { authenticate } from '../middleware/auth'
-import { upload } from '../middleware/upload'
-import { uploadCarousel } from '../middleware/uploadCarousel'
-import { uploadProduct } from '../middleware/uploadProduct'
-import { uploadCompanyImage } from '../middleware/uploadCompanyImage'
+import { AdminController } from '../controllers/AdminController.js'
+import { ExchangeRateController } from '../controllers/ExchangeRateController.js'
+import { ProductController } from '../controllers/ProductController.js'
+import { TradeController } from '../controllers/TradeController.js'
+import { ContentController } from '../controllers/ContentController.js'
+import { StatsController } from '../controllers/StatsController.js'
+import { SupportedCardController } from '../controllers/SupportedCardController.js'
+import { CarouselController } from '../controllers/CarouselController.js'
+import { SystemConfigController } from '../controllers/SystemConfigController.js'
+import { ConversionConfigController } from '../controllers/ConversionConfigController.js'
+import { CompanyImageController } from '../controllers/CompanyImageController.js'
+import { authenticate } from '../middleware/auth.js'
+import { upload } from '../middleware/upload.js'
+import { uploadCarousel } from '../middleware/uploadCarousel.js'
+import { uploadProduct } from '../middleware/uploadProduct.js'
+import { uploadCompanyImage } from '../middleware/uploadCompanyImage.js'
 import {
   validatePagination,
   validateId,
   validateExchangeRate,
   validateProduct,
   validateTrade,
-} from '../middleware/validator'
+} from '../middleware/validator.js'
 
 const router = Router()
 

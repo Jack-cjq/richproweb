@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { AppDataSource } from '../data-source'
-import { ExchangeRate } from '../entities/ExchangeRate'
-import { SystemConfig } from '../entities/SystemConfig'
+import { AppDataSource } from '../data-source.js'
+import { ExchangeRate } from '../entities/ExchangeRate.js'
+import { SystemConfig } from '../entities/SystemConfig.js'
 
 /**
  * 汇率更新服务

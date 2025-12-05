@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { SupportedCard } from '../entities/SupportedCard'
+import { AppDataSource } from '../data-source.js'
+import { SupportedCard } from '../entities/SupportedCard.js'
 import path from 'path'
 
 export class SupportedCardController {

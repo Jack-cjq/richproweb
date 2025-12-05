@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { Trade } from '../entities/Trade'
-import { Product } from '../entities/Product'
-import { ExchangeRate } from '../entities/ExchangeRate'
+import { AppDataSource } from '../data-source.js'
+import { Trade } from '../entities/Trade.js'
+import { Product } from '../entities/Product.js'
+import { ExchangeRate } from '../entities/ExchangeRate.js'
 import { MoreThan } from 'typeorm'
 
 export class StatsController {

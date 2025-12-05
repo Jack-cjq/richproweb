@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { Product } from '../entities/Product'
+import { AppDataSource } from '../data-source.js'
+import { Product } from '../entities/Product.js'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import fs from 'fs/promises'

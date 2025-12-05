@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { Admin } from '../entities/Admin'
+import { AppDataSource } from '../data-source.js'
+import { Admin } from '../entities/Admin.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 

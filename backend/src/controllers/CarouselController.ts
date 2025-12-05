@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { AppDataSource } from '../data-source'
-import { Carousel } from '../entities/Carousel'
+import { AppDataSource } from '../data-source.js'
+import { Carousel } from '../entities/Carousel.js'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import fs from 'fs/promises'

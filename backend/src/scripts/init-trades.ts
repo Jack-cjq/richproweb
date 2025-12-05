@@ -1,6 +1,6 @@
 import 'reflect-metadata'
-import { AppDataSource } from '../data-source'
-import { Trade } from '../entities/Trade'
+import { AppDataSource } from '../data-source.js'
+import { Trade } from '../entities/Trade.js'
 
 /**
  * 初始化示例交易数据

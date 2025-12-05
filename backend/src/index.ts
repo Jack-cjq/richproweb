@@ -2,11 +2,11 @@ import 'reflect-metadata'
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { AppDataSource } from './data-source'
-import publicRoutes from './routes/public'
-import adminRoutes from './routes/admin'
-import { errorHandler } from './middleware/errorHandler'
-import { ExchangeRateService } from './services/exchangeRateService'
+import { AppDataSource } from './data-source.js'
+import publicRoutes from './routes/public.js'
+import adminRoutes from './routes/admin.js'
+import { errorHandler } from './middleware/errorHandler.js'
+import { ExchangeRateService } from './services/exchangeRateService.js'
 
 dotenv.config()
 

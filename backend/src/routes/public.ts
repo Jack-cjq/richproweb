@@ -1,13 +1,13 @@
 import { Router } from 'express'
-import { ExchangeRateController } from '../controllers/ExchangeRateController'
-import { ProductController } from '../controllers/ProductController'
-import { TradeController } from '../controllers/TradeController'
-import { ContentController } from '../controllers/ContentController'
-import { SupportedCardController } from '../controllers/SupportedCardController'
-import { CarouselController } from '../controllers/CarouselController'
-import { ConversionConfigController } from '../controllers/ConversionConfigController'
-import { CompanyImageController } from '../controllers/CompanyImageController'
-import { validatePagination } from '../middleware/validator'
+import { ExchangeRateController } from '../controllers/ExchangeRateController.js'
+import { ProductController } from '../controllers/ProductController.js'
+import { TradeController } from '../controllers/TradeController.js'
+import { ContentController } from '../controllers/ContentController.js'
+import { SupportedCardController } from '../controllers/SupportedCardController.js'
+import { CarouselController } from '../controllers/CarouselController.js'
+import { ConversionConfigController } from '../controllers/ConversionConfigController.js'
+import { CompanyImageController } from '../controllers/CompanyImageController.js'
+import { validatePagination } from '../middleware/validator.js'
 
 const router = Router()
 

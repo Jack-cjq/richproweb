@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import bcrypt from 'bcryptjs'
-import { AppDataSource } from '../data-source'
-import { Admin } from '../entities/Admin'
+import { AppDataSource } from '../data-source.js'
+import { Admin } from '../entities/Admin.js'
 
 async function initAdmin() {
   try {
