@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { gsap } from 'gsap'
+import { publicApi } from '../api/services'
 
 interface Product {
   id: number
@@ -39,6 +40,8 @@ export default function ProductHall({ products, loading, supportedCards = [], ma
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || t('products.all'))
   const [isMobile, setIsMobile] = useState(false)
   const [showAllCategories, setShowAllCategories] = useState(false)
+  const [selectedCurrency, setSelectedCurrency] = useState<'NGN' | 'GHC'>('NGN')
+  const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
 
   // 检测是否为移动端
   useEffect(() => {
@@ -53,6 +56,39 @@ export default function ProductHall({ products, loading, supportedCards = [], ma
       window.removeEventListener('resize', checkMobile)
     }
   }, [])
+
+  // 加载汇率配置
+  useEffect(() => {
+    const loadConversionConfig = async () => {
+      try {
+        const res = await publicApi.getConversionConfig()
+        setConversionConfig({
+          ngnRate: res.data.ngnRate || 200,
+          ghcRate: res.data.ghcRate || 1.0,
+        })
+      } catch (error) {
+        console.error('加载汇率配置失败:', error)
+        setConversionConfig({
+          ngnRate: 200,
+          ghcRate: 1.0,
+        })
+      }
+    }
+    loadConversionConfig()
+  }, [])
+
+  const getConvertedAmount = (amount: number): number => {
+    if (!conversionConfig) return amount
+    if (selectedCurrency === 'NGN') {
+      return Math.floor(amount * conversionConfig.ngnRate)
+    } else {
+      return Math.floor(amount * conversionConfig.ghcRate)
+    }
+  }
+
+  const getCurrencySymbol = (): string => {
+    return selectedCurrency === 'NGN' ? '₦' : 'GH₵'
+  }
 
   // 从支持的礼品卡中获取分类（只显示激活的卡片）
   const cardCategories = supportedCards
@@ -188,8 +224,34 @@ export default function ProductHall({ products, loading, supportedCards = [], ma
 
   return (
     <div>
-      {/* 分类筛选 */}
+      {/* 货币切换和分类筛选 */}
       <div className="mb-6 md:mb-8">
+        {/* 货币切换 */}
+        <div className="flex justify-center mb-4 md:mb-6">
+          <div className="flex items-center gap-2 bg-white dark-mode:bg-black border border-silver-200 dark-mode:border-gold-500/30 rounded-md p-1">
+            <button
+              onClick={() => setSelectedCurrency('NGN')}
+              className={`px-3 md:px-4 py-1.5 md:py-2 rounded text-sm md:text-base font-semibold transition-colors ${
+                selectedCurrency === 'NGN'
+                  ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                  : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+              }`}
+            >
+              ₦ NGN
+            </button>
+            <button
+              onClick={() => setSelectedCurrency('GHC')}
+              className={`px-3 md:px-4 py-1.5 md:py-2 rounded text-sm md:text-base font-semibold transition-colors ${
+                selectedCurrency === 'GHC'
+                  ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                  : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+              }`}
+            >
+              GH₵ GHC
+            </button>
+          </div>
+        </div>
+        {/* 分类筛选 */}
         <div className="flex flex-wrap gap-2 md:gap-3 justify-center">
           {visibleCategories.map((category) => (
             <button
@@ -297,7 +359,7 @@ export default function ProductHall({ products, loading, supportedCards = [], ma
                     <div className="flex justify-between items-center text-[10px] md:text-xs font-medium text-neutral-500 dark-mode:text-gold-500/70">
                       <span>{t('products.limit')}</span>
                       <span className="font-bold text-neutral-700 dark-mode:text-gold-500 text-[10px] md:text-xs">
-                        ¥{Number(product.minAmount).toLocaleString()} - ¥{Number(product.maxAmount).toLocaleString()}
+                        {getCurrencySymbol()}{getConvertedAmount(Number(product.minAmount)).toLocaleString()} - {getCurrencySymbol()}{getConvertedAmount(Number(product.maxAmount)).toLocaleString()}
                       </span>
                     </div>
                   </div>

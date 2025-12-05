@@ -24,12 +24,44 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [selectedCurrency, setSelectedCurrency] = useState<'NGN' | 'GHC'>('NGN')
+  const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
 
   useEffect(() => {
     if (id) {
       loadProduct()
     }
+    loadConversionConfig()
   }, [id])
+
+  const loadConversionConfig = async () => {
+    try {
+      const res = await publicApi.getConversionConfig()
+      setConversionConfig({
+        ngnRate: res.data.ngnRate || 200,
+        ghcRate: res.data.ghcRate || 1.0,
+      })
+    } catch (error) {
+      console.error('加载汇率配置失败:', error)
+      setConversionConfig({
+        ngnRate: 200,
+        ghcRate: 1.0,
+      })
+    }
+  }
+
+  const getConvertedAmount = (amount: number): number => {
+    if (!conversionConfig) return amount
+    if (selectedCurrency === 'NGN') {
+      return Math.floor(amount * conversionConfig.ngnRate)
+    } else {
+      return Math.floor(amount * conversionConfig.ghcRate)
+    }
+  }
+
+  const getCurrencySymbol = (): string => {
+    return selectedCurrency === 'NGN' ? '₦' : 'GH₵'
+  }
 
   useEffect(() => {
     if (product) {
@@ -168,10 +200,33 @@ export default function ProductDetail() {
 
             {/* 右侧：产品信息 */}
             <div>
-              <div className="mb-4">
+              <div className="mb-4 flex items-center justify-between">
                 <span className="px-3 py-1 bg-blue-100 dark-mode:bg-gold-500/30 text-blue-700 dark-mode:text-gold-500 rounded-md text-sm font-semibold">
                   {product.category}
                 </span>
+                {/* 货币切换 */}
+                <div className="flex items-center gap-2 bg-white dark-mode:bg-black border border-silver-200 dark-mode:border-gold-500/30 rounded-md p-1">
+                  <button
+                    onClick={() => setSelectedCurrency('NGN')}
+                    className={`px-3 py-1.5 rounded text-sm font-semibold transition-colors ${
+                      selectedCurrency === 'NGN'
+                        ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                        : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+                    }`}
+                  >
+                    ₦ NGN
+                  </button>
+                  <button
+                    onClick={() => setSelectedCurrency('GHC')}
+                    className={`px-3 py-1.5 rounded text-sm font-semibold transition-colors ${
+                      selectedCurrency === 'GHC'
+                        ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                        : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+                    }`}
+                  >
+                    GH₵ GHC
+                  </button>
+                </div>
               </div>
               <h1 className="text-4xl font-bold text-neutral-700 dark-mode:text-gold-500 mb-4">
                 {product.name}
@@ -192,13 +247,13 @@ export default function ProductDetail() {
                   <div className="flex justify-between items-center">
                     <span className="text-neutral-600 dark-mode:text-gold-500/80 font-medium">{t('productDetail.minAmount')}</span>
                     <span className="text-xl font-bold text-neutral-700 dark-mode:text-gold-500">
-                      ¥{Number(product.minAmount).toLocaleString()}
+                      {getCurrencySymbol()}{getConvertedAmount(Number(product.minAmount)).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-neutral-600 dark-mode:text-gold-500/80 font-medium">{t('productDetail.maxAmount')}</span>
                     <span className="text-xl font-bold text-neutral-700 dark-mode:text-gold-500">
-                      ¥{Number(product.maxAmount).toLocaleString()}
+                      {getCurrencySymbol()}{getConvertedAmount(Number(product.maxAmount)).toLocaleString()}
                     </span>
                   </div>
                 </div>

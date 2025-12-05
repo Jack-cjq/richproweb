@@ -21,6 +21,7 @@ export default function AdminProducts() {
   const [supportedCards, setSupportedCards] = useState<any[]>([]) // 支持的礼品卡列表
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<number | null>(null)
+  const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -35,7 +36,33 @@ export default function AdminProducts() {
   useEffect(() => {
     loadProducts()
     loadSupportedCards()
+    loadConversionConfig()
   }, [])
+
+  const loadConversionConfig = async () => {
+    try {
+      const res = await adminApi.getConversionConfig()
+      setConversionConfig({
+        ngnRate: res.data.ngnRate || 200,
+        ghcRate: res.data.ghcRate || 1.0,
+      })
+    } catch (error) {
+      console.error('加载汇率配置失败:', error)
+      setConversionConfig({
+        ngnRate: 200,
+        ghcRate: 1.0,
+      })
+    }
+  }
+
+  const getConvertedAmount = (amount: number, currency: 'NGN' | 'GHC'): number => {
+    if (!conversionConfig) return amount
+    if (currency === 'NGN') {
+      return Math.floor(amount * conversionConfig.ngnRate)
+    } else {
+      return Math.floor(amount * conversionConfig.ghcRate)
+    }
+  }
 
   const loadProducts = async () => {
     try {
@@ -373,7 +400,7 @@ export default function AdminProducts() {
                     <th className="text-left py-4 px-4 text-neutral-600 font-semibold">产品名称</th>
                     <th className="text-left py-4 px-4 text-neutral-600 font-semibold">分类</th>
                     <th className="text-left py-4 px-4 text-neutral-600 font-semibold">汇率</th>
-                    <th className="text-left py-4 px-4 text-neutral-600 font-semibold">限额</th>
+                    <th className="text-left py-4 px-4 text-neutral-600 font-semibold">限额 (₦ / GH₵)</th>
                     <th className="text-left py-4 px-4 text-neutral-600 font-semibold">状态</th>
                     <th className="text-left py-4 px-4 text-neutral-600 font-semibold">操作</th>
                   </tr>
@@ -419,8 +446,11 @@ export default function AdminProducts() {
                         <td className="py-4 px-4 text-neutral-700 font-medium">
                           {Number(product.exchangeRate).toFixed(4)}
                         </td>
-                        <td className="py-4 px-4 text-neutral-600">
-                          ¥{Number(product.minAmount).toLocaleString()} - ¥{Number(product.maxAmount).toLocaleString()}
+                        <td className="py-4 px-4">
+                          <div className="text-neutral-600">
+                            <div className="font-medium">₦{getConvertedAmount(Number(product.minAmount), 'NGN').toLocaleString()} - ₦{getConvertedAmount(Number(product.maxAmount), 'NGN').toLocaleString()}</div>
+                            <div className="text-sm mt-1">GH₵{getConvertedAmount(Number(product.minAmount), 'GHC').toLocaleString()} - GH₵{getConvertedAmount(Number(product.maxAmount), 'GHC').toLocaleString()}</div>
+                          </div>
                         </td>
                         <td className="py-4 px-4">
                           <span

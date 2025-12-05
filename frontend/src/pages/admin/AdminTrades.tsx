@@ -14,6 +14,7 @@ export default function AdminTrades() {
   const [totalPages, setTotalPages] = useState(0)
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<number | null>(null)
+  const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
   const [formData, setFormData] = useState({
     productName: '',
     amount: '',
@@ -25,7 +26,25 @@ export default function AdminTrades() {
 
   useEffect(() => {
     loadTrades()
+    loadConversionConfig()
   }, [page, limit])
+
+  const loadConversionConfig = async () => {
+    try {
+      const res = await adminApi.getConversionConfig()
+      setConversionConfig({
+        ngnRate: res.data.ngnRate || 200,
+        ghcRate: res.data.ghcRate || 1.0,
+      })
+    } catch (error) {
+      console.error('加载汇率配置失败:', error)
+      // 使用默认值
+      setConversionConfig({
+        ngnRate: 200,
+        ghcRate: 1.0,
+      })
+    }
+  }
 
   const loadTrades = async () => {
     try {
@@ -108,6 +127,15 @@ export default function AdminTrades() {
       loadTrades()
     } catch (error) {
       toast.error('删除失败')
+    }
+  }
+
+  const getConvertedAmount = (totalAmount: number, currency: 'NGN' | 'GHC'): number => {
+    if (!conversionConfig) return totalAmount
+    if (currency === 'NGN') {
+      return Math.floor(totalAmount * conversionConfig.ngnRate)
+    } else {
+      return Math.floor(totalAmount * conversionConfig.ghcRate)
     }
   }
 
@@ -287,7 +315,7 @@ export default function AdminTrades() {
                         汇率
                       </th>
                       <th className="text-left py-4 px-4 text-neutral-600 font-semibold">
-                        总金额
+                        总金额 (₦ / GH₵)
                       </th>
                       <th className="text-left py-4 px-4 text-neutral-600 font-semibold">
                         时间
@@ -327,8 +355,11 @@ export default function AdminTrades() {
                         <td className="py-4 px-4 text-neutral-700 font-medium">
                           {Number(trade.exchangeRate).toFixed(4)}
                         </td>
-                        <td className="py-4 px-4 text-green-600 font-bold">
-                          ¥{Number(trade.totalAmount).toLocaleString()}
+                        <td className="py-4 px-4">
+                          <div className="text-green-600 font-bold">
+                            <div>₦{getConvertedAmount(Number(trade.totalAmount), 'NGN').toLocaleString()}</div>
+                            <div className="text-sm mt-1">GH₵{getConvertedAmount(Number(trade.totalAmount), 'GHC').toLocaleString()}</div>
+                          </div>
                         </td>
                           <td className="py-4 px-4 text-neutral-500 text-sm">
                             {format(new Date(trade.createdAt), 'yyyy-MM-dd HH:mm', {

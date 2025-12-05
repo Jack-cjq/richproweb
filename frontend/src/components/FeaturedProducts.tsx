@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { gsap } from 'gsap'
 import { useEffect, useRef, useState } from 'react'
+import { publicApi } from '../api/services'
 
 interface Product {
   id: number
@@ -25,6 +26,8 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
   const { t } = useTranslation()
   const cardRefs = useRef<(HTMLAnchorElement | null)[]>([])
   const [isMobile, setIsMobile] = useState(false)
+  const [selectedCurrency, setSelectedCurrency] = useState<'NGN' | 'GHC'>('NGN')
+  const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
 
   // 检测是否为移动端
   useEffect(() => {
@@ -39,6 +42,39 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
       window.removeEventListener('resize', checkMobile)
     }
   }, [])
+
+  // 加载汇率配置
+  useEffect(() => {
+    const loadConversionConfig = async () => {
+      try {
+        const res = await publicApi.getConversionConfig()
+        setConversionConfig({
+          ngnRate: res.data.ngnRate || 200,
+          ghcRate: res.data.ghcRate || 1.0,
+        })
+      } catch (error) {
+        console.error('加载汇率配置失败:', error)
+        setConversionConfig({
+          ngnRate: 200,
+          ghcRate: 1.0,
+        })
+      }
+    }
+    loadConversionConfig()
+  }, [])
+
+  const getConvertedAmount = (amount: number): number => {
+    if (!conversionConfig) return amount
+    if (selectedCurrency === 'NGN') {
+      return Math.floor(amount * conversionConfig.ngnRate)
+    } else {
+      return Math.floor(amount * conversionConfig.ghcRate)
+    }
+  }
+
+  const getCurrencySymbol = (): string => {
+    return selectedCurrency === 'NGN' ? '₦' : 'GH₵'
+  }
 
   // 根据设备类型决定显示数量
   const displayLimit = isMobile ? mobileMaxDisplay : maxDisplay
@@ -98,6 +134,31 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
 
   return (
     <div>
+      {/* 货币切换 */}
+      <div className="flex justify-center mb-4 md:mb-6">
+        <div className="flex items-center gap-2 bg-white dark-mode:bg-black border border-silver-200 dark-mode:border-gold-500/30 rounded-md p-1">
+          <button
+            onClick={() => setSelectedCurrency('NGN')}
+            className={`px-3 md:px-4 py-1.5 md:py-2 rounded text-sm md:text-base font-semibold transition-colors ${
+              selectedCurrency === 'NGN'
+                ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+            }`}
+          >
+            ₦ NGN
+          </button>
+          <button
+            onClick={() => setSelectedCurrency('GHC')}
+            className={`px-3 md:px-4 py-1.5 md:py-2 rounded text-sm md:text-base font-semibold transition-colors ${
+              selectedCurrency === 'GHC'
+                ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+            }`}
+          >
+            GH₵ GHC
+          </button>
+        </div>
+      </div>
       <div className={`grid gap-2 md:gap-4 ${isMobile ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}>
         {displayedProducts.map((product, index) => (
         <Link
@@ -147,9 +208,9 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
               {product.description}
             </p>
             <div className="flex justify-between items-center">
-              <span className="text-[9px] md:text-xs text-neutral-500 dark-mode:text-gold-500/70">{t('products.exchangeRate')}</span>
-              <span className="text-sm md:text-lg font-bold text-blue-600 dark-mode:text-gold-500">
-                {Number(product.exchangeRate).toFixed(4)}
+              <span className="text-[9px] md:text-xs text-neutral-500 dark-mode:text-gold-500/70">{t('products.limit')}</span>
+              <span className="text-[10px] md:text-sm font-bold text-blue-600 dark-mode:text-gold-500 text-right">
+                {getCurrencySymbol()}{getConvertedAmount(Number(product.minAmount)).toLocaleString()} - {getCurrencySymbol()}{getConvertedAmount(Number(product.maxAmount)).toLocaleString()}
               </span>
             </div>
           </div>

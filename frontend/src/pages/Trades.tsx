@@ -20,6 +20,8 @@ export default function Trades() {
   const [searchParams, setSearchParams] = useSearchParams()
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
+  const [selectedCurrency, setSelectedCurrency] = useState<'NGN' | 'GHC'>('NGN')
+  const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
 
   const getLocale = () => {
     switch (i18n.language) {
@@ -32,7 +34,25 @@ export default function Trades() {
 
   useEffect(() => {
     loadTrades()
+    loadConversionConfig()
   }, [page, limit])
+
+  const loadConversionConfig = async () => {
+    try {
+      const res = await publicApi.getConversionConfig()
+      setConversionConfig({
+        ngnRate: res.data.ngnRate || 200,
+        ghcRate: res.data.ghcRate || 1.0,
+      })
+    } catch (error) {
+      console.error('加载汇率配置失败:', error)
+      // 使用默认值
+      setConversionConfig({
+        ngnRate: 200,
+        ghcRate: 1.0,
+      })
+    }
+  }
 
   const loadTrades = async () => {
     try {
@@ -52,6 +72,19 @@ export default function Trades() {
     setSearchParams({ page: '1', limit: String(newLimit) })
   }
 
+  const getConvertedAmount = (totalAmount: number): number => {
+    if (!conversionConfig) return totalAmount
+    if (selectedCurrency === 'NGN') {
+      return Math.floor(totalAmount * conversionConfig.ngnRate)
+    } else {
+      return Math.floor(totalAmount * conversionConfig.ghcRate)
+    }
+  }
+
+  const getCurrencySymbol = (): string => {
+    return selectedCurrency === 'NGN' ? '₦' : 'GH₵'
+  }
+
   return (
     <div className="min-h-screen bg-silver-50 dark-mode:bg-black">
       <Header />
@@ -61,7 +94,30 @@ export default function Trades() {
             <span className="absolute left-1/2 -translate-x-1/2 -top-3 w-24 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent dark-mode:via-gold-500 rounded-full"></span>
             {t('trades.title')}
           </h1>
-          <div className="flex items-center gap-3 justify-center md:justify-end md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 mt-6 md:mt-0">
+          <div className="flex items-center gap-3 justify-center md:justify-end md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 mt-6 md:mt-0 flex-wrap">
+            {/* 货币切换 */}
+            <div className="flex items-center gap-2 bg-white dark-mode:bg-black border border-silver-200 dark-mode:border-gold-500/30 rounded-md p-1">
+              <button
+                onClick={() => setSelectedCurrency('NGN')}
+                className={`px-3 py-1.5 rounded text-sm font-semibold transition-colors ${
+                  selectedCurrency === 'NGN'
+                    ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                    : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+                }`}
+              >
+                ₦ NGN
+              </button>
+              <button
+                onClick={() => setSelectedCurrency('GHC')}
+                className={`px-3 py-1.5 rounded text-sm font-semibold transition-colors ${
+                  selectedCurrency === 'GHC'
+                    ? 'bg-blue-600 text-white dark-mode:bg-gold-500 dark-mode:text-black'
+                    : 'text-neutral-600 dark-mode:text-gold-500/70 hover:bg-silver-50 dark-mode:hover:bg-gold-500/10'
+                }`}
+              >
+                GH₵ GHC
+              </button>
+            </div>
             <label className="text-sm font-medium text-neutral-600 dark-mode:text-gold-500/80">{t('trades.itemsPerPage')}:</label>
             <select
               value={limit}
@@ -140,7 +196,7 @@ export default function Trades() {
                           {Number(trade.exchangeRate).toFixed(4)}
                         </td>
                         <td className="py-4 px-4 text-green-600 dark-mode:text-green-400 font-bold">
-                          ¥{Number(trade.totalAmount).toLocaleString()}
+                          {getCurrencySymbol()}{getConvertedAmount(Number(trade.totalAmount)).toLocaleString()}
                         </td>
                         <td className="py-4 px-4 text-neutral-500 dark-mode:text-gold-500/70 text-sm">
                           {format(new Date(trade.createdAt), 'yyyy-MM-dd HH:mm', {

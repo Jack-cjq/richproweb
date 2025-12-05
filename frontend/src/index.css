@@ -399,51 +399,6 @@ html.dark-mode .carousel-bottom-gradient {
 }
 
 
-/* 轮播图中的 WhatsApp 按钮样式 */
-.carousel-whatsapp-btn {
-  color: white !important;
-  /* 确保按钮在轮播图中可见 */
-  backdrop-filter: blur(4px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-/* 移动端定位样式和缩小按钮 */
-@media (max-width: 767px) {
-  .carousel-whatsapp-btn {
-    position: relative;
-    left: 290px;
-    top: 152px;
-    padding: 0.125rem 0.375rem !important; /* 减小垂直内边距以降低高度 */
-    font-size: 0.5rem !important; /* 再次缩小字体 */
-    gap: 0.1875rem !important; /* 再次缩小图标和文字间距 */
-  }
-  
-  .carousel-whatsapp-btn svg {
-    width: 0.625rem !important; /* 再次缩小图标 */
-    height: 0.625rem !important;
-  }
-  
-  .carousel-whatsapp-btn span {
-    font-size: 0.5rem !important; /* 再次缩小文字 */
-  }
-}
-
-/* 桌面端定位样式 */
-@media (min-width: 768px) {
-  .carousel-whatsapp-btn {
-    position: relative;
-    left: 1400px;
-    top: 735px;
-  }
-}
-
-/* 确保按钮内部所有文字都是白色 */
-.carousel-whatsapp-btn,
-.carousel-whatsapp-btn span,
-.carousel-whatsapp-btn svg {
-  color: white !important;
-}
-
 /* 如果使用CSS变量，也要确保显示 */
 html.dark-mode .carousel-image[style*="--carousel-bg-image"] {
   background-image: var(--carousel-bg-image) !important;
