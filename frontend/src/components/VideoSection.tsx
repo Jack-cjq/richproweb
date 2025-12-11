@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -20,7 +20,9 @@ interface Props {
 export default function VideoSection({ videos, loading }: Props) {
   const { t } = useTranslation()
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+  const [userInteracted, setUserInteracted] = useState(false)
   const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({})
+  const videoContainerRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
 
   const getVideoUrl = (videoUrl: string) => {
     if (videoUrl.startsWith('http') || videoUrl.startsWith('data:')) {
@@ -71,6 +73,77 @@ export default function VideoSection({ videos, loading }: Props) {
   // 按排序顺序排序，然后合并所有视频
   const sortedVideos = [...videos].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
 
+  // 监听用户交互（点击、滚动等），用于解除浏览器自动播放限制
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      setUserInteracted(true)
+      // 移除监听器，只需要一次交互
+      document.removeEventListener('click', handleUserInteraction)
+      document.removeEventListener('scroll', handleUserInteraction)
+      document.removeEventListener('touchstart', handleUserInteraction)
+    }
+
+    document.addEventListener('click', handleUserInteraction, { once: true })
+    document.addEventListener('scroll', handleUserInteraction, { once: true, passive: true })
+    document.addEventListener('touchstart', handleUserInteraction, { once: true })
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction)
+      document.removeEventListener('scroll', handleUserInteraction)
+      document.removeEventListener('touchstart', handleUserInteraction)
+    }
+  }, [])
+
+  // 使用 Intersection Observer 监听公司介绍视频是否进入视口
+  useEffect(() => {
+    const companyVideos = sortedVideos.filter(v => v.type === 'company')
+    
+    if (companyVideos.length === 0) return
+
+    const observers: IntersectionObserver[] = []
+
+    companyVideos.forEach((video) => {
+      const container = videoContainerRefs.current[video.id]
+      const videoEl = videoRefs.current[video.id]
+
+      if (!container || !videoEl) return
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+              // 视频进入视口且可见度超过50%
+              // 先尝试静音播放（浏览器允许）
+              videoEl.muted = true
+              videoEl.play().then(() => {
+                // 静音播放成功后，如果用户已交互，尝试取消静音
+                if (userInteracted) {
+                  videoEl.muted = false
+                }
+              }).catch((err) => {
+                console.warn('自动播放失败:', err)
+              })
+            } else if (!entry.isIntersecting) {
+              // 视频离开视口，暂停以节省资源
+              videoEl.pause()
+            }
+          })
+        },
+        {
+          threshold: [0, 0.5, 1.0], // 监听多个阈值
+          rootMargin: '0px',
+        }
+      )
+
+      observer.observe(container)
+      observers.push(observer)
+    })
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect())
+    }
+  }, [sortedVideos, userInteracted])
+
   return (
     <div className="flex justify-center w-full px-4">
       <div 
@@ -91,11 +164,31 @@ export default function VideoSection({ videos, loading }: Props) {
               flex: '0 1 auto'
             }}
           >
-                <div className="relative aspect-video bg-silver-100 dark-mode:bg-black/30 group cursor-pointer overflow-hidden"
-                  onClick={() => setSelectedVideo(video)}
+                <div 
+                  ref={(el) => {
+                    if (el && video.type === 'company') {
+                      videoContainerRefs.current[video.id] = el
+                    }
+                  }}
+                  className="relative aspect-video bg-silver-100 dark-mode:bg-black/30 group cursor-pointer overflow-hidden"
+                  onClick={() => {
+                    // 如果是公司介绍视频，点击时取消静音
+                    if (video.type === 'company') {
+                      const videoEl = videoRefs.current[video.id]
+                      if (videoEl) {
+                        videoEl.muted = false
+                        videoEl.play().catch(err => {
+                          console.warn('播放失败:', err)
+                        })
+                      }
+                    }
+                    // 打开全屏播放器
+                    setSelectedVideo(video)
+                  }}
                 >
                   {/* 缩略图或视频预览 */}
-                  {getThumbnailUrl(video.thumbnailUrl) ? (
+                  {/* 公司介绍视频直接显示视频并自动播放，不显示缩略图 */}
+                  {getThumbnailUrl(video.thumbnailUrl) && video.type !== 'company' ? (
                     <img
                       src={getThumbnailUrl(video.thumbnailUrl)!}
                       alt={video.title || '未命名视频'}
@@ -112,35 +205,55 @@ export default function VideoSection({ videos, loading }: Props) {
                     />
                   ) : null}
                   {/* 如果没有缩略图或缩略图加载失败，使用视频的第一帧作为预览 */}
+                  {/* 公司介绍视频直接显示并自动播放 */}
                   <video
                     ref={(el) => {
                       if (el) videoRefs.current[video.id] = el
                     }}
                     src={getVideoUrl(video.videoUrl)}
-                    className={`w-full h-full object-cover ${getThumbnailUrl(video.thumbnailUrl) ? 'hidden' : 'block'}`}
-                    muted
+                    className={`w-full h-full object-cover ${getThumbnailUrl(video.thumbnailUrl) && video.type !== 'company' ? 'hidden' : 'block'}`}
+                    muted={true}
                     playsInline
-                    preload="metadata"
+                    autoPlay={false}
+                    loop={video.type === 'company'}
+                    preload={video.type === 'company' ? 'auto' : 'metadata'}
                     onLoadedMetadata={(e) => {
-                      // 设置视频到第一帧以显示封面
                       const videoEl = e.currentTarget
-                      try {
-                        // 设置到0.1秒以获取第一帧
-                        videoEl.currentTime = 0.1
-                      } catch (err) {
-                        console.warn('无法设置视频时间:', err)
+                      if (video.type === 'company') {
+                        // 公司介绍视频：初始状态保持静音，等待进入视口后由 Intersection Observer 处理播放
+                        videoEl.muted = true
+                      } else {
+                        // 其他视频只显示第一帧
+                        try {
+                          videoEl.currentTime = 0.1
+                        } catch (err) {
+                          console.warn('无法设置视频时间:', err)
+                        }
                       }
                     }}
                     onSeeked={(e) => {
-                      // 当视频跳转到指定时间后，暂停以确保显示第一帧
                       const videoEl = e.currentTarget
-                      videoEl.pause()
+                      // 只有非公司介绍视频才暂停
+                      if (video.type !== 'company') {
+                        videoEl.pause()
+                      }
                     }}
                     onCanPlay={(e) => {
-                      // 当视频可以播放时，确保显示第一帧
                       const videoEl = e.currentTarget
-                      if (videoEl.readyState >= 2 && videoEl.currentTime === 0) {
+                      if (video.type === 'company') {
+                        // 公司介绍视频：等待进入视口后由 Intersection Observer 处理播放
+                        // 初始状态保持静音
+                        videoEl.muted = true
+                      } else if (videoEl.readyState >= 2 && videoEl.currentTime === 0) {
+                        // 其他视频显示第一帧
                         videoEl.currentTime = 0.1
+                      }
+                    }}
+                    onPlay={() => {
+                      // 当视频开始播放时，如果是公司介绍视频且用户已交互，尝试取消静音
+                      const videoEl = videoRefs.current[video.id]
+                      if (video.type === 'company' && userInteracted && videoEl) {
+                        videoEl.muted = false
                       }
                     }}
                     onError={(e) => {
@@ -157,18 +270,28 @@ export default function VideoSection({ videos, loading }: Props) {
                   <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-green-500/20 dark-mode:from-gold-500/20 dark-mode:to-gold-400/20 pointer-events-none opacity-0 video-fallback-bg">
                     <div className="text-6xl text-white dark-mode:text-gold-500 opacity-30">▶</div>
                   </div>
-                  {/* 播放按钮覆盖层 - 始终显示 */}
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center pointer-events-none">
-                    <div className="w-16 h-16 md:w-20 md:h-20 bg-white/90 dark-mode:bg-gold-500/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                      <svg
-                        className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark-mode:text-black ml-1"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
+                  {/* 播放按钮覆盖层 - 只有非自动播放的视频显示 */}
+                  {video.type !== 'company' && (
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center pointer-events-none">
+                      <div className="w-16 h-16 md:w-20 md:h-20 bg-white/90 dark-mode:bg-gold-500/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                        <svg
+                          className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark-mode:text-black ml-1"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  {/* 自动播放视频的悬停提示 */}
+                  {video.type === 'company' && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-sm font-medium bg-black/50 px-4 py-2 rounded-md">
+                        点击全屏播放
+                      </div>
+                    </div>
+                  )}
                 </div>
                 {(video.title || video.description) && (
                   <div className="p-4 md:p-6">
