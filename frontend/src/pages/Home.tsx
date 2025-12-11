@@ -7,8 +7,8 @@ import Carousel from '@/components/Carousel'
 import ExchangeRates from '@/components/ExchangeRates'
 import SupportedCards from '@/components/SupportedCards'
 import ConversionCalculator from '@/components/ConversionCalculator'
-import ProductHall from '@/components/ProductHall'
 import FeaturedProducts from '@/components/FeaturedProducts'
+import VideoSection from '@/components/VideoSection'
 import RecentTrades from '@/components/RecentTrades'
 import ProcessGuide from '@/components/ProcessGuide'
 import SecurityInfo from '@/components/SecurityInfo'
@@ -16,6 +16,7 @@ import AnimatedBackground from '@/components/AnimatedBackground'
 import FloatingElements from '@/components/FloatingElements'
 import SparkleEffect from '@/components/SparkleEffect'
 import DecorativeWave from '@/components/DecorativeWave'
+import ImageModal from '@/components/ImageModal'
 import { publicApi } from '@/api/services'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +30,10 @@ export default function Home() {
   const [recentTrades, setRecentTrades] = useState<any[]>([])
   const [content, setContent] = useState<any>(null)
   const [companyImages, setCompanyImages] = useState<any[]>([])
+  const [videos, setVideos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedImage, setSelectedImage] = useState<{ url: string; alt: string } | null>(null)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   useEffect(() => {
     // 加载数据
@@ -59,7 +63,7 @@ export default function Home() {
 
   const loadData = async () => {
     try {
-      const [carouselsRes, ratesRes, cardsRes, productsRes, tradesRes, contentRes, imagesRes] = await Promise.all([
+      const [carouselsRes, ratesRes, cardsRes, productsRes, tradesRes, contentRes, imagesRes, videosRes] = await Promise.all([
         publicApi.getCarousels(),
         publicApi.getExchangeRates(),
         publicApi.getSupportedCards(),
@@ -67,6 +71,7 @@ export default function Home() {
         publicApi.getRecentTrades(5),
         publicApi.getContent(),
         publicApi.getCompanyImages(),
+        publicApi.getVideos(),
       ])
       setCarousels(carouselsRes.data || [])
       setExchangeRates(ratesRes.data || [])
@@ -75,6 +80,7 @@ export default function Home() {
       setRecentTrades(tradesRes.data?.trades || [])
       setContent(contentRes.data || null)
       setCompanyImages(imagesRes.data || [])
+      setVideos(videosRes.data || [])
       setLoading(false)
     } catch (error) {
       toast.error(t('common.error'))
@@ -142,26 +148,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 兑换大厅 - 浅绿色背景 */}
-      <section 
-        className="section-card px-4 py-8 md:py-16 bg-gradient-to-br from-green-50 to-green-100/30 dark-mode:bg-black relative overflow-hidden"
-      >
-        <DecorativeWave color="green" direction="up" />
-        <SparkleEffect />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <h2 className="section-title text-2xl md:text-4xl font-bold text-neutral-700 dark-mode:text-gold-500 mb-6 md:mb-12 text-center relative">
-            <span className="absolute left-1/2 -translate-x-1/2 -top-2 w-16 md:w-24 h-0.5 md:h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent dark-mode:via-gold-500 rounded-full"></span>
-            {t('home.exchangeHall')}
-          </h2>
-          <ProductHall 
-            products={products} 
-            loading={loading}
-            supportedCards={supportedCards}
-            maxDisplay={6}
-            mobileMaxDisplay={3}
-          />
-        </div>
-      </section>
+      {/* 视频介绍 - 浅绿色背景 */}
+      {videos.length > 0 && (
+        <section 
+          className="section-card px-4 py-8 md:py-16 bg-gradient-to-br from-green-50 to-green-100/30 dark-mode:bg-black relative overflow-hidden"
+        >
+          <DecorativeWave color="green" direction="up" />
+          <SparkleEffect />
+          <div className="max-w-7xl mx-auto relative z-10">
+            <h2 className="section-title text-2xl md:text-4xl font-bold text-neutral-700 dark-mode:text-gold-500 mb-6 md:mb-12 text-center relative">
+              <span className="absolute left-1/2 -translate-x-1/2 -top-2 w-16 md:w-24 h-0.5 md:h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent dark-mode:via-gold-500 rounded-full"></span>
+              {t('videoIntroduction') || 'Video Introduction'}
+            </h2>
+            <VideoSection videos={videos} loading={loading} />
+          </div>
+        </section>
+      )}
 
       {/* 最新成交 - 白色背景 */}
       <section 
@@ -217,7 +219,16 @@ export default function Home() {
                           : `/images/company/${image.imageUrl.split('/').pop()}`
                       }
                       alt={image.title}
-                      className="w-full h-48 md:h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-48 md:h-64 object-cover group-hover:scale-110 transition-transform duration-300 cursor-pointer"
+                      onClick={() => {
+                        const imageUrl = image.imageUrl.startsWith('http') || image.imageUrl.startsWith('data:image/')
+                          ? image.imageUrl
+                          : image.imageUrl.startsWith('/')
+                          ? image.imageUrl
+                          : `/images/company/${image.imageUrl.split('/').pop()}`
+                        setSelectedImage({ url: imageUrl, alt: image.title })
+                        setIsImageModalOpen(true)
+                      }}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none'
                       }}
@@ -265,6 +276,19 @@ export default function Home() {
       )}
 
       <Footer />
+      
+      {/* 图片查看器 */}
+      {selectedImage && (
+        <ImageModal
+          imageUrl={selectedImage.url}
+          alt={selectedImage.alt}
+          isOpen={isImageModalOpen}
+          onClose={() => {
+            setIsImageModalOpen(false)
+            setSelectedImage(null)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimatedBackground from '@/components/AnimatedBackground'
 import FloatingElements from '@/components/FloatingElements'
+import ImageModal from '@/components/ImageModal'
 import { useStatNumberAnimation } from '@/hooks/useStatNumberAnimation'
 import { publicApi } from '@/api/services'
 
@@ -47,6 +48,8 @@ export default function About() {
   const { t } = useTranslation()
   const statsSectionRef = useRef<HTMLElement>(null)
   const [companyImages, setCompanyImages] = useState<CompanyImage[]>([])
+  const [selectedImage, setSelectedImage] = useState<{ url: string; alt: string } | null>(null)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   const strengths = [
     {
@@ -202,7 +205,16 @@ export default function About() {
                           : `/images/company/${image.imageUrl.split('/').pop()}`
                       }
                       alt={image.title}
-                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300 cursor-pointer"
+                      onClick={() => {
+                        const imageUrl = image.imageUrl.startsWith('http') || image.imageUrl.startsWith('data:image/')
+                          ? image.imageUrl
+                          : image.imageUrl.startsWith('/')
+                          ? image.imageUrl
+                          : `/images/company/${image.imageUrl.split('/').pop()}`
+                        setSelectedImage({ url: imageUrl, alt: image.title })
+                        setIsImageModalOpen(true)
+                      }}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none'
                       }}
@@ -285,6 +297,19 @@ export default function About() {
       </section>
 
       <Footer />
+      
+      {/* 图片查看器 */}
+      {selectedImage && (
+        <ImageModal
+          imageUrl={selectedImage.url}
+          alt={selectedImage.alt}
+          isOpen={isImageModalOpen}
+          onClose={() => {
+            setIsImageModalOpen(false)
+            setSelectedImage(null)
+          }}
+        />
+      )}
     </div>
   )
 }

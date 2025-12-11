@@ -12,6 +12,7 @@ export const publicApi = {
   getCompanyImages: () => api.get('/public/company-images'),
   getProductById: (id: number) => api.get(`/public/products/${id}`),
   getConversionConfig: () => api.get('/public/conversion-config'),
+  getVideos: () => api.get('/public/videos'),
 }
 
 // 管理员API
@@ -198,5 +199,39 @@ export const adminApi = {
   
   // 统计数据
   getStats: () => api.get('/admin/stats'),
+  
+  // 视频管理
+  getVideos: () => api.get('/admin/videos'),
+  createVideo: (data: any) => {
+    const formData = new FormData()
+    Object.keys(data).forEach(key => {
+      if (key === 'video' && data[key] instanceof File) {
+        formData.append('video', data[key])
+      } else if (key !== 'video') {
+        formData.append(key, data[key])
+      }
+    })
+    return api.post('/admin/videos', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  },
+  updateVideo: (id: number, data: any) => {
+    const formData = new FormData()
+    Object.keys(data).forEach(key => {
+      if (key === 'video' && data[key] instanceof File) {
+        formData.append('video', data[key])
+      } else if (key !== 'video') {
+        formData.append(key, data[key])
+      }
+    })
+    return api.put(`/admin/videos/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  },
+  deleteVideo: (id: number) => api.delete(`/admin/videos/${id}`),
 }
 

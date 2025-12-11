@@ -7,6 +7,7 @@ import { SupportedCardController } from '../controllers/SupportedCardController.
 import { CarouselController } from '../controllers/CarouselController.js'
 import { ConversionConfigController } from '../controllers/ConversionConfigController.js'
 import { CompanyImageController } from '../controllers/CompanyImageController.js'
+import { VideoController } from '../controllers/VideoController.js'
 import { validatePagination } from '../middleware/validator.js'
 
 const router = Router()
@@ -35,6 +36,9 @@ router.get('/company-images', CompanyImageController.getPublic)
 
 // 换算配置
 router.get('/conversion-config', ConversionConfigController.getPublic)
+
+// 视频 - 后端只返回激活的视频
+router.get('/videos', VideoController.getPublic)
 
 export default router
 

@@ -256,9 +256,9 @@ html.dark-mode .calculator-dark-bg button:hover {
   border-color: rgba(212, 175, 55, 0.4) !important;
 }
 
-/* 深色模式下强制白色和渐变背景变为黑色 */
-html.dark-mode .bg-white,
-html.dark-mode section.bg-white {
+/* 深色模式下强制白色和渐变背景变为黑色（排除后台管理页面） */
+html.dark-mode .bg-white:not(.admin-page *),
+html.dark-mode section.bg-white:not(.admin-page *) {
   background-color: #000000 !important;
 }
 

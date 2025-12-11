@@ -15,12 +15,12 @@ const PORT = parseInt(process.env.PORT || '5000', 10)
 
 // 中间件
 app.use(cors())
-// 增加请求体大小限制以支持大文件上传（50MB）
-app.use(express.json({ limit: '50mb' }))
-app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+// 增加请求体大小限制以支持大文件上传（200MB）
+app.use(express.json({ limit: '200mb' }))
+app.use(express.urlencoded({ extended: true, limit: '200mb' }))
 
-// 静态资源服务 - 提供图片访问（生产环境建议使用 CDN）
-// 如果使用本地存储，图片放在 frontend/public/images 目录
+// 静态资源服务 - 提供图片和视频访问（生产环境建议使用 CDN）
+// 如果使用本地存储，图片放在 frontend/public/images 目录，视频放在 frontend/public/videos 目录
 // 如果使用 AWS S3，配置 CDN 域名即可
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -28,6 +28,7 @@ import { dirname } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 app.use('/images', express.static(path.join(__dirname, '../../frontend/public/images')))
+app.use('/videos', express.static(path.join(__dirname, '../../frontend/public/videos')))
 
 // 路由
 app.use('/api/public', publicRoutes)

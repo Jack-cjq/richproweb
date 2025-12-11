@@ -10,11 +10,13 @@ import { CarouselController } from '../controllers/CarouselController.js'
 import { SystemConfigController } from '../controllers/SystemConfigController.js'
 import { ConversionConfigController } from '../controllers/ConversionConfigController.js'
 import { CompanyImageController } from '../controllers/CompanyImageController.js'
+import { VideoController } from '../controllers/VideoController.js'
 import { authenticate } from '../middleware/auth.js'
 import { upload } from '../middleware/upload.js'
 import { uploadCarousel } from '../middleware/uploadCarousel.js'
 import { uploadProduct } from '../middleware/uploadProduct.js'
 import { uploadCompanyImage } from '../middleware/uploadCompanyImage.js'
+import { uploadVideo } from '../middleware/uploadVideo.js'
 import {
   validatePagination,
   validateId,
@@ -85,6 +87,12 @@ router.get('/config', SystemConfigController.getAll)
 // 换算配置管理
 router.get('/conversion-config', ConversionConfigController.getAdmin)
 router.put('/conversion-config', ConversionConfigController.update)
+
+// 视频管理
+router.get('/videos', VideoController.getAll)
+router.post('/videos', uploadVideo.single('video'), VideoController.create)
+router.put('/videos/:id', validateId, uploadVideo.single('video'), VideoController.update)
+router.delete('/videos/:id', validateId, VideoController.delete)
 
 export default router
 

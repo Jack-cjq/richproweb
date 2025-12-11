@@ -10,7 +10,9 @@
     "init:rates": "tsx src/scripts/init-exchange-rates.ts",
     "verify:rates": "tsx src/scripts/verify-rates.ts",
     "init:trades": "tsx src/scripts/init-trades.ts",
-    "init:conversion-config": "tsx src/scripts/init-conversion-config.ts"
+    "init:conversion-config": "tsx src/scripts/init-conversion-config.ts",
+    "init:videos": "tsx src/scripts/init-videos-table.ts",
+    "verify:videos": "tsx src/scripts/verify-videos-table.ts"
   },
   "dependencies": {
     "@types/multer": "^2.0.0",

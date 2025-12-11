@@ -9,6 +9,7 @@ import { Carousel } from './entities/Carousel.js'
 import { SystemConfig } from './entities/SystemConfig.js'
 import { ConversionConfig } from './entities/ConversionConfig.js'
 import { CompanyImage } from './entities/CompanyImage.js'
+import { Video } from './entities/Video.js'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -19,7 +20,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE || 'giftcard',
   synchronize: process.env.NODE_ENV !== 'production',
   logging: process.env.NODE_ENV === 'development',
-  entities: [ExchangeRate, Product, Trade, Admin, Content, SupportedCard, Carousel, SystemConfig, ConversionConfig, CompanyImage],
+  entities: [ExchangeRate, Product, Trade, Admin, Content, SupportedCard, Carousel, SystemConfig, ConversionConfig, CompanyImage, Video],
   migrations: ['src/migrations/**/*.ts'],
 })
 

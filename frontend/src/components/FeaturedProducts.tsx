@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { gsap } from 'gsap'
 import { useEffect, useRef, useState } from 'react'
+import ImageModal from './ImageModal'
 import { publicApi } from '../api/services'
 
 interface Product {
@@ -28,6 +29,8 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
   const [isMobile, setIsMobile] = useState(false)
   const [selectedCurrency, setSelectedCurrency] = useState<'NGN' | 'GHC'>('NGN')
   const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
+  const [selectedImage, setSelectedImage] = useState<{ url: string; alt: string } | null>(null)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   // 检测是否为移动端
   useEffect(() => {
@@ -190,7 +193,13 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
             <img
               src={getImageUrl(product.images)}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out product-image"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out product-image cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setSelectedImage({ url: getImageUrl(product.images), alt: product.name })
+                setIsImageModalOpen(true)
+              }}
               onError={(e) => {
                 // 图片加载失败时显示占位图
                 e.currentTarget.src = '/images/placeholder-product.png'
@@ -231,6 +240,19 @@ export default function FeaturedProducts({ products, loading, maxDisplay = 4, mo
             </svg>
           </Link>
         </div>
+      )}
+      
+      {/* 图片查看器 */}
+      {selectedImage && (
+        <ImageModal
+          imageUrl={selectedImage.url}
+          alt={selectedImage.alt}
+          isOpen={isImageModalOpen}
+          onClose={() => {
+            setIsImageModalOpen(false)
+            setSelectedImage(null)
+          }}
+        />
       )}
     </div>
   )

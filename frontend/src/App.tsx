@@ -14,6 +14,7 @@ import AdminTrades from './pages/admin/AdminTrades'
 import AdminContent from '@/pages/admin/AdminContent'
 import AdminCarousels from './pages/admin/AdminCarousels'
 import AdminCompanyImages from './pages/admin/AdminCompanyImages'
+import AdminVideos from './pages/admin/AdminVideos'
 import AdminConversionConfig from './pages/admin/AdminConversionConfig'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -91,6 +92,14 @@ function App() {
         element={
           <ProtectedRoute>
             <AdminCompanyImages />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/videos"
+        element={
+          <ProtectedRoute>
+            <AdminVideos />
           </ProtectedRoute>
         }
       />

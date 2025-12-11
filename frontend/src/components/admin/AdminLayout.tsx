@@ -1,4 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
 
 interface Props {
@@ -9,6 +11,29 @@ export default function AdminLayout({ children }: Props) {
   const location = useLocation()
   const navigate = useNavigate()
   const { logout } = useAuth()
+  const { i18n } = useTranslation()
+
+  // 后台管理页面强制使用浅色模式和中文
+  useEffect(() => {
+    // 强制使用浅色模式
+    document.documentElement.classList.remove('dark-mode')
+    // 保存之前的语言设置
+    const previousLanguage = i18n.language
+    // 强制使用中文
+    i18n.changeLanguage('zh')
+    
+    return () => {
+      // 退出时恢复之前的主题设置
+      const saved = localStorage.getItem('darkMode')
+      if (saved === 'true') {
+        document.documentElement.classList.add('dark-mode')
+      }
+      // 退出后台时恢复之前的语言设置（如果之前不是中文）
+      if (previousLanguage && previousLanguage !== 'zh') {
+        i18n.changeLanguage(previousLanguage)
+      }
+    }
+  }, [i18n])
 
   const menuItems = [
     { path: '/admin/dashboard', label: '仪表盘', icon: '📊' },
@@ -19,6 +44,7 @@ export default function AdminLayout({ children }: Props) {
     { path: '/admin/content', label: '内容管理', icon: '📄' },
     { path: '/admin/carousels', label: '轮播图管理', icon: '🖼️' },
     { path: '/admin/company-images', label: '公司图片管理', icon: '🏢' },
+    { path: '/admin/videos', label: '视频管理', icon: '🎬' },
     { path: '/admin/conversion-config', label: '换算配置', icon: '🧮' },
   ]
 
@@ -28,7 +54,7 @@ export default function AdminLayout({ children }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-silver-50">
+    <div className="min-h-screen bg-silver-50 admin-page">
       {/* 侧边栏 */}
       <aside className="fixed left-0 top-0 h-full w-60 bg-surface border-r border-silver-200 overflow-y-auto">
         <div className="p-6 border-b border-silver-200">

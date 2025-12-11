@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { gsap } from 'gsap'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import ImageModal from '@/components/ImageModal'
 import { publicApi } from '@/api/services'
 import toast from 'react-hot-toast'
 
@@ -26,6 +27,7 @@ export default function ProductDetail() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [selectedCurrency, setSelectedCurrency] = useState<'NGN' | 'GHC'>('NGN')
   const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -159,7 +161,8 @@ export default function ProductDetail() {
                   <img
                     src={getImageUrl(mainImage)}
                     alt={product.name}
-                    className="w-full h-96 object-cover rounded-md border border-silver-200 dark-mode:border-gold-500/30"
+                    className="w-full h-96 object-cover rounded-md border border-silver-200 dark-mode:border-gold-500/30 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setIsImageModalOpen(true)}
                     onError={(e) => {
                       e.currentTarget.src = '/images/placeholder-product.png'
                     }}
@@ -187,7 +190,11 @@ export default function ProductDetail() {
                       <img
                         src={getImageUrl(image)}
                         alt={`${product.name} ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => {
+                          setSelectedImageIndex(index)
+                          setIsImageModalOpen(true)
+                        }}
                         onError={(e) => {
                           e.currentTarget.src = '/images/placeholder-product.png'
                         }}
@@ -281,6 +288,16 @@ export default function ProductDetail() {
         </div>
       </div>
       <Footer />
+      
+      {/* 图片查看器 */}
+      {mainImage && (
+        <ImageModal
+          imageUrl={getImageUrl(mainImage)}
+          alt={product.name}
+          isOpen={isImageModalOpen}
+          onClose={() => setIsImageModalOpen(false)}
+        />
+      )}
     </div>
   )
 }

@@ -16,7 +16,17 @@
     "confirm": "确认",
     "close": "关闭",
     "previous": "上一页",
-    "next": "下一页"
+    "next": "下一页",
+    "add": "添加",
+    "create": "创建",
+    "active": "激活",
+    "inactive": "未激活",
+    "status": "状态",
+    "actions": "操作",
+    "createSuccess": "创建成功",
+    "updateSuccess": "更新成功",
+    "deleteSuccess": "删除成功",
+    "confirmDelete": "确定要删除吗？"
   },
   "theme": {
     "darkMode": "深色模式",
@@ -40,6 +50,7 @@
     "securityInfo": "安全保障",
     "supportedCards": "支持的礼品卡"
   },
+  "videoIntroduction": "视频介绍",
   "calculator": {
     "title": "换算计算器",
     "selectCardType": "选择卡片类型",
@@ -202,6 +213,26 @@
     "maxAmount": "最大金额",
     "noImage": "暂无图片",
     "exchangeNow": "立即兑换"
+  },
+  "admin": {
+    "videos": {
+      "title": "视频管理",
+      "description": "描述",
+      "descriptionPlaceholder": "请输入视频描述（可选）",
+      "type": "类型",
+      "typeCompany": "公司介绍",
+      "typeBusiness": "业务介绍",
+      "sortOrder": "排序",
+      "videoFile": "视频文件",
+      "videoUrl": "视频URL",
+      "thumbnailUrl": "缩略图URL",
+      "currentVideo": "当前视频"
+    }
+  },
+  "videos": {
+    "noVideos": "暂无视频",
+    "companyIntroduction": "公司介绍",
+    "businessIntroduction": "业务介绍"
   }
 }
 
