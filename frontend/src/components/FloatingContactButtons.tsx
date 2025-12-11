@@ -87,7 +87,7 @@ export default function FloatingContactButtons() {
 
       {/* TikTok 按钮 */}
       <a
-        href="https://www.tiktok.com/@yourusername"
+        href="https://www.tiktok.com/@veryrich429"
         target="_blank"
         rel="noopener noreferrer"
         className="floating-btn group relative bg-[#000000] dark-mode:border-2 dark-mode:border-white/30 dark-mode:shadow-[0_4px_12px_rgba(255,255,255,0.1)] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 floating-contact-btn"
