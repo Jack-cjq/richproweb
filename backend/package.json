@@ -12,7 +12,8 @@
     "init:trades": "tsx src/scripts/init-trades.ts",
     "init:conversion-config": "tsx src/scripts/init-conversion-config.ts",
     "init:videos": "tsx src/scripts/init-videos-table.ts",
-    "verify:videos": "tsx src/scripts/verify-videos-table.ts"
+    "verify:videos": "tsx src/scripts/verify-videos-table.ts",
+    "init:social-buttons": "tsx src/scripts/init-social-buttons.ts"
   },
   "dependencies": {
     "@types/multer": "^2.0.0",

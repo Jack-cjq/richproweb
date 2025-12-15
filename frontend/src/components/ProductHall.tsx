@@ -45,6 +45,24 @@ export default function ProductHall({ products, loading, supportedCards = [], ma
   const [conversionConfig, setConversionConfig] = useState<{ ngnRate: number; ghcRate: number } | null>(null)
   const [selectedImage, setSelectedImage] = useState<{ url: string; alt: string } | null>(null)
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  const [whatsappUrl, setWhatsappUrl] = useState<string>('https://wa.me/8619972918971') // 默认值
+
+  // 加载社交按钮配置（获取WhatsApp链接）
+  useEffect(() => {
+    const loadSocialButtons = async () => {
+      try {
+        const res = await publicApi.getSocialButtons()
+        const buttons = res.data || []
+        const whatsappButton = buttons.find((btn: any) => btn.type === 'whatsapp' && btn.isActive)
+        if (whatsappButton && whatsappButton.url) {
+          setWhatsappUrl(whatsappButton.url)
+        }
+      } catch (error) {
+        // 使用默认值
+      }
+    }
+    loadSocialButtons()
+  }, [])
 
   // 检测是否为移动端
   useEffect(() => {
@@ -376,7 +394,7 @@ export default function ProductHall({ products, loading, supportedCards = [], ma
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      window.open('https://wa.me/8619972918971', '_blank', 'noopener,noreferrer')
+                      window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
                     }}
                     className="mt-3 md:mt-4 w-full py-2 md:py-2.5 bg-blue-600 dark-mode:bg-gold-500 text-white dark-mode:text-black rounded-md hover:bg-blue-700 dark-mode:hover:bg-gold-600 transition-all duration-300 font-semibold text-xs md:text-sm shadow-card hover:shadow-dialog transform hover:scale-[1.02] active:scale-100 focus:ring-2 focus:ring-blue-500 dark-mode:focus:ring-gold-500 focus:ring-offset-2 flex items-center justify-center cursor-pointer"
                   >

@@ -11,6 +11,7 @@ import { SystemConfigController } from '../controllers/SystemConfigController.js
 import { ConversionConfigController } from '../controllers/ConversionConfigController.js'
 import { CompanyImageController } from '../controllers/CompanyImageController.js'
 import { VideoController } from '../controllers/VideoController.js'
+import { SocialButtonController } from '../controllers/SocialButtonController.js'
 import { authenticate } from '../middleware/auth.js'
 import { upload } from '../middleware/upload.js'
 import { uploadCarousel } from '../middleware/uploadCarousel.js'
@@ -93,6 +94,13 @@ router.get('/videos', VideoController.getAll)
 router.post('/videos', uploadVideo.single('video'), VideoController.create)
 router.put('/videos/:id', validateId, uploadVideo.single('video'), VideoController.update)
 router.delete('/videos/:id', validateId, VideoController.delete)
+
+// 社交按钮管理
+router.get('/social-buttons', SocialButtonController.getAll)
+router.post('/social-buttons', SocialButtonController.create)
+router.put('/social-buttons/batch', SocialButtonController.updateBatch) // 必须在 /:id 路由之前
+router.put('/social-buttons/:id', validateId, SocialButtonController.update)
+router.delete('/social-buttons/:id', validateId, SocialButtonController.delete)
 
 export default router
 

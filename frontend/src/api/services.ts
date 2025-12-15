@@ -13,6 +13,7 @@ export const publicApi = {
   getProductById: (id: number) => api.get(`/public/products/${id}`),
   getConversionConfig: () => api.get('/public/conversion-config'),
   getVideos: () => api.get('/public/videos'),
+  getSocialButtons: () => api.get('/public/social-buttons'),
 }
 
 // 管理员API
@@ -233,5 +234,14 @@ export const adminApi = {
     })
   },
   deleteVideo: (id: number) => api.delete(`/admin/videos/${id}`),
+  
+  // 社交按钮管理
+  getSocialButtons: () => api.get('/admin/social-buttons'),
+  createSocialButton: (data: any) => api.post('/admin/social-buttons', data),
+  updateSocialButton: (id: number, data: any) =>
+    api.put(`/admin/social-buttons/${id}`, data),
+  deleteSocialButton: (id: number) => api.delete(`/admin/social-buttons/${id}`),
+  updateSocialButtonsBatch: (buttons: any[]) =>
+    api.put('/admin/social-buttons/batch', { buttons }),
 }
 

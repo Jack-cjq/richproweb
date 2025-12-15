@@ -46,6 +46,7 @@ export default function AdminLayout({ children }: Props) {
     { path: '/admin/company-images', label: '公司图片管理', icon: '🏢' },
     { path: '/admin/videos', label: '视频管理', icon: '🎬' },
     { path: '/admin/conversion-config', label: '换算配置', icon: '🧮' },
+    { path: '/admin/social-buttons', label: '社交按钮管理', icon: '🔗' },
   ]
 
   const handleLogout = () => {

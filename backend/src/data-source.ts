@@ -10,6 +10,7 @@ import { SystemConfig } from './entities/SystemConfig.js'
 import { ConversionConfig } from './entities/ConversionConfig.js'
 import { CompanyImage } from './entities/CompanyImage.js'
 import { Video } from './entities/Video.js'
+import { SocialButton } from './entities/SocialButton.js'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -20,7 +21,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE || 'giftcard',
   synchronize: process.env.NODE_ENV !== 'production',
   logging: process.env.NODE_ENV === 'development',
-  entities: [ExchangeRate, Product, Trade, Admin, Content, SupportedCard, Carousel, SystemConfig, ConversionConfig, CompanyImage, Video],
+  entities: [ExchangeRate, Product, Trade, Admin, Content, SupportedCard, Carousel, SystemConfig, ConversionConfig, CompanyImage, Video, SocialButton],
   migrations: ['src/migrations/**/*.ts'],
 })
 

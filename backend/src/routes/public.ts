@@ -8,6 +8,7 @@ import { CarouselController } from '../controllers/CarouselController.js'
 import { ConversionConfigController } from '../controllers/ConversionConfigController.js'
 import { CompanyImageController } from '../controllers/CompanyImageController.js'
 import { VideoController } from '../controllers/VideoController.js'
+import { SocialButtonController } from '../controllers/SocialButtonController.js'
 import { validatePagination } from '../middleware/validator.js'
 
 const router = Router()
@@ -39,6 +40,9 @@ router.get('/conversion-config', ConversionConfigController.getPublic)
 
 // 视频 - 后端只返回激活的视频
 router.get('/videos', VideoController.getPublic)
+
+// 社交按钮 - 后端只返回激活的按钮
+router.get('/social-buttons', SocialButtonController.getPublic)
 
 export default router
 

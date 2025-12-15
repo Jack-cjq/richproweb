@@ -16,6 +16,7 @@ import AdminCarousels from './pages/admin/AdminCarousels'
 import AdminCompanyImages from './pages/admin/AdminCompanyImages'
 import AdminVideos from './pages/admin/AdminVideos'
 import AdminConversionConfig from './pages/admin/AdminConversionConfig'
+import AdminSocialButtons from './pages/admin/AdminSocialButtons'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -108,6 +109,14 @@ function App() {
         element={
           <ProtectedRoute>
             <AdminConversionConfig />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/social-buttons"
+        element={
+          <ProtectedRoute>
+            <AdminSocialButtons />
           </ProtectedRoute>
         }
       />
