@@ -269,7 +269,7 @@ export default function ProductDetail() {
               {/* 操作按钮 */}
               <div className="space-y-3">
                 <a
-                  href="https://wa.me/8617764065981"
+                  href="https://wa.me/8619972918971"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-4 bg-blue-600 dark-mode:bg-gold-500 text-white dark-mode:text-black dark-mode:font-bold rounded-md hover:bg-blue-700 dark-mode:hover:bg-gold-600 transition-all duration-300 font-semibold text-lg shadow-card hover:shadow-dialog transform hover:scale-[1.02] active:scale-100 focus:ring-2 focus:ring-blue-500 dark-mode:focus:ring-gold-500 focus:ring-offset-2 flex items-center justify-center cursor-pointer"

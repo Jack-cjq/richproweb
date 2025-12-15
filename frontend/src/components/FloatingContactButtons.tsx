@@ -41,7 +41,7 @@ export default function FloatingContactButtons() {
     >
       {/* WhatsApp 按钮 */}
       <a
-        href="https://wa.me/8617764065981"
+        href="https://wa.me/8619972918971"
         target="_blank"
         rel="noopener noreferrer"
         className="floating-btn group relative bg-[#25D366] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 floating-contact-btn"
