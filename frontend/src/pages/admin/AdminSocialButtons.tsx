@@ -52,7 +52,6 @@ export default function AdminSocialButtons() {
   const handleEdit = (button: SocialButton) => {
     setEditing(button.id)
     setShowForm(false)
-    const buttonType = BUTTON_TYPES.find(bt => bt.value === button.type)
     setFormData({
       type: button.type,
       label: button.label,
