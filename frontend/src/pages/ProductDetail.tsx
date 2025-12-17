@@ -288,6 +288,12 @@ export default function ProductDetail() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => {
+                    if (typeof (window as any).gtag_report_conversion === 'function') {
+                      e.preventDefault()
+                      ;(window as any).gtag_report_conversion(whatsappUrl)
+                    }
+                  }}
                   className="w-full py-4 bg-blue-600 dark-mode:bg-gold-500 text-white dark-mode:text-black dark-mode:font-bold rounded-md hover:bg-blue-700 dark-mode:hover:bg-gold-600 transition-all duration-300 font-semibold text-lg shadow-card hover:shadow-dialog transform hover:scale-[1.02] active:scale-100 focus:ring-2 focus:ring-blue-500 dark-mode:focus:ring-gold-500 focus:ring-offset-2 flex items-center justify-center cursor-pointer"
                 >
                   {t('productDetail.exchangeNow')}

@@ -132,12 +132,21 @@ export default function FloatingContactButtons() {
           ? { background: style.bgColor }
           : { backgroundColor: style.bgColor }
         
+        const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+          const url = button.url || '#'
+          if (url !== '#' && typeof (window as any).gtag_report_conversion === 'function') {
+            e.preventDefault()
+            ;(window as any).gtag_report_conversion(url)
+          }
+        }
+
         return (
           <a
             key={button.id}
             href={button.url || '#'}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleClick}
             className={`floating-btn group relative rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 floating-contact-btn ${style.className || ''}`}
             style={bgStyle}
             aria-label={`联系 ${button.label}`}
